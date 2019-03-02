@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+    	$(function(){
+    		layui.use(['jquery', 'form', 'table', 'element'], function() {
+    			var table = layui.table;
+    			var form = layui.form;
+    			$.post("adminUser/GetById",{id:parseInt($("#adminId").val())},function(result){
+    				$("#username").val(result.data.a_name);
+    				$("#L_pass").val(result.data.a_pwd);
+	    			//获取角色
+	    			$.post("adminUser/GetRole",function(result2){
+	    				console.log(result2.data);
+	    				if(result2.state==1){
+	    					$("#role").empty();
+	    					var role = $("#role");
+	    					for(var i in result2.data){
+	    						if(result.data.r_id==result2.data[i].r_id){
+			    					var str = '<input value="'+result2.data[i].r_id+'" checked="true" type="radio" name="like1" lay-skin="primary" title="'+result2.data[i].r_name+'">';
+			    					role.append($(str));
+	    						}else{
+		    						var str = '<input value="'+result2.data[i].r_id+'" type="radio" name="like1" lay-skin="primary" title="'+result2.data[i].r_name+'">';
+			    					role.append($(str));
+	    						}
+	    					}
+	    					form.render();
+	    				}
+	    			});
+    			});
+    		})
+    	})
+    </script>
+  </head>
+  
+  <body>
+    <div class="x-body">
+        <form class="layui-form">
+          <input type="hidden" id="adminId"/>
+          <div class="layui-form-item">
+              <label for="username" class="layui-form-label">
+                  <span class="x-red">*</span>登录名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="username" name="username" required="" lay-verify="required"
+                  autocomplete="off" value="admin" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red">*</span>将会成为您唯一的登入名
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label class="layui-form-label"><span class="x-red">*</span>角色</label>
+              <div class="layui-input-block" id="role">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_pass" class="layui-form-label">
+                  <span class="x-red">*</span>密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  6到16个字符
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button  class="layui-btn" lay-filter="update" lay-submit="">修改</button>
+          </div>
+      </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length < 5){
+                return '昵称至少得5个字符啊';
+              }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+          });
+
+          //监听提交
+          form.on('submit(update)', function(data){
+            console.log(data);
+            //发异步，把数据提交给API
+            var data = {
+            		aId:parseInt($("#adminId").val()),
+            		aName:$("#username").val(),
+            		aPwd:$("#L_pass").val(),
+            		aRole:parseInt($("#role input[type='radio']:checked").val())
+            };
+            $.post("adminUser/UpdateAdmin",data,function(result){
+            	console.log(result);
+            });
+            layer.alert("修改成功", {icon: 6},function () {
+                // 获得frame索引
+                var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+                parent.layer.close(index);
+            });
+            return false;
+          });
+          
+          
+        });
+    </script>
+
+  </body>
+
+</html>

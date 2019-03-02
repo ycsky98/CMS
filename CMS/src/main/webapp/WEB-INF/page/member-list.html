@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <![endif]-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <script>
+    	$(function(){
+    		$("#data").empty();
+    		//设置默认当前页为第一页
+    		$("#page").data("start",1);
+    		GetData();
+    	})
+    	
+    	/**
+    		填充所有用户
+    	*/
+    	function GetData(){
+    		$("#data").empty();
+    		$.post("Vip/GetData",{"start":$("#page").data("start")},function(result){
+    			if(result.state==1){
+    				//设置分页信息
+    				$("#page").data("start",result.data.page.pageCurrent);
+    				$("#count").html(result.data.page.pageCount);
+    				//数据填充
+    				DoGetDataInTable(result.data.user);
+    			}
+    		});
+    	}
+    	
+    	function DoGetDataInTable(data){
+    		var tbody = $("#data");
+    		var count = 0;
+    		for(var i in data){
+    			var tr = $("<tr></tr>");//创建一个tr
+    			tr.append($("<td></td>").append('<div id="'+data[i].vipId+'" class="layui-unselect layui-form-checkbox" onclick="selected(this)" lay-skin="primary" data-id='+data[i].vipId+'><i class="layui-icon">&#xe605;</i></div>'));
+    			var str = "<td>"+data[i].vipId+"</td>"+
+    	            "<td>"+data[i].vipName+"</td>"+
+    	            "<td>"+(data[i].vipSex==1?"男":"女")+"</td>"+
+    	            "<td>"+data[i].vipPhone+"</td>"+
+    	            "<td>"+data[i].vipEmail+"</td>"+
+    	            "<td>"+data[i].vipAddress+"</td>"+
+    	            "<td>"+new Date(data[i].vipTime).toLocaleString()+"</td>";
+    	        tr.append($(str));
+    	        var strArr = new Array();
+    	        strArr.push("'编辑'");
+    	        strArr.push("'修改密码'");
+    	        strArr.push("'member_edit'");
+    	        strArr.push("'#vip_id'");
+    	        strArr.push("'member_password'");//layui-btn layui-btn-normal layui-btn-mini
+    	        strArr.push("'#vip_id'");//layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled
+    	        strArr.push('{vipId:'+data[i].vipId+',vipState:'+(data[i].vipState==1?0:1)+'}');
+    	        var str2 = '<td class="td-status">'+
+    	              '<span class="'+(data[i].vipState==1?'layui-btn layui-btn-normal layui-btn-mini':'layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled')+'">'+(data[i].vipState==1?'已启用':'已禁用')+'</span></td>'+
+    	              '<td class="td-manage">'+
+    	                '<a onclick="member_stop(this,'+strArr[6]+')" href="javascript:;"  title="'+(data[i].vipState==1?'禁用':'启用')+'">'+
+    	                  '<i class="layui-icon">&#xe601;</i>'+
+    	                '</a>'+
+    	                /* '<a title="编辑" onclick="x_admin_show('+strArr[0]+','+strArr[2]+',600,400,'+strArr[3]+','+data[i].vipId+')" href="javascript:;">'+
+    	                  '<i class="layui-icon">&#xe642;</i>'+
+    	                '</a>'+ */
+    	                '<a onclick="x_admin_show('+strArr[1]+','+strArr[4]+',600,400,'+strArr[5]+','+data[i].vipId+')" title="修改密码" href="javascript:;">'+
+    	                  '<i class="layui-icon">&#xe631;</i>'+
+    	                '</a>'+
+    	                '<a title="删除" onclick="member_del(this,'+data[i].vipId+')" href="javascript:;">'+
+    	                  '<i class="layui-icon">&#xe640;</i>'+
+    	                '</a>'+
+    	              '</td>';
+    	        tr.append($(str2));
+    	        tbody.append(tr);
+    		}
+    	}
+    	
+    	function selected(obj){
+    		if($(obj).hasClass("layui-unselect layui-form-checkbox layui-form-checked")){
+    			$(obj).attr("class","layui-unselect layui-form-checkbox");
+    		}else{
+    			$(obj).attr("class","layui-unselect layui-form-checkbox layui-form-checked");
+    		}
+    	}
+    	
+    	//分页++
+    	function countADD(){
+    		//获取总页数
+    		var allpage = parseInt($("#count").text());
+    		var page = $("#page").data("start");
+    		if(page<allpage){
+    			$("#page").data("start",++page);
+    			GetData();
+    		}else{
+    			layer.msg("当前已是最后一页啦!");
+    		}
+    	}
+    	
+    	//分页--
+    	function Reduction(){
+    		//获取总页数
+    		var page = $("#page").data("start");
+    		if(page>1){
+    			$("#page").data("start",--page);
+    			GetData();
+    		}else{
+    			layer.msg("当前已是第一页啦!");
+    		}
+    	}
+    </script>
+  </head>
+  <body class="layui-anim layui-anim-up">
+    <div class="x-nav">
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn" onclick="x_admin_show('添加用户','member_add',600,400)"><i class="layui-icon"></i>添加</button>
+        <span class="x-right" style="line-height:40px">共有：<span id="count"></span> 页</span>
+      </xblock>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>性别</th>
+            <th>手机</th>
+            <th>邮箱</th>
+            <th>地址</th>
+            <th>加入时间</th>
+            <th>状态</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody id="data">
+          <tr>
+            <td>
+              <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>1</td>
+            <td>小明</td>
+            <td>男</td>
+            <td>13000000000</td>
+            <td>admin@mail.com</td>
+            <td>北京市 海淀区</td>
+            <td>2017-01-01 11:11:42</td>
+            <td class="td-status">
+              <span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span></td>
+            <td class="td-manage">
+              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
+                <i class="layui-icon">&#xe601;</i>
+              </a>
+              <a title="编辑" onclick="x_admin_show('编辑','member_edit',600,400,'#vip_id',123)" href="javascript:;">
+                <i class="layui-icon">&#xe642;</i>
+              </a>
+              <a onclick="x_admin_show('修改密码','member_password',600,400)" title="修改密码" href="javascript:;">
+                <i class="layui-icon">&#xe631;</i>
+              </a>
+              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="page">
+        <div id="page">
+          <a class="prev" href="javascript:;" onclick="Reduction()" id="Reduction">&lt;&lt;</a>
+          <a class="next" href="javascript:;" onclick="countADD()" id="Add">&gt;&gt;</a>
+        </div>
+      </div>
+
+    </div>
+    <script>
+
+       /*用户-停用*/
+      function member_stop(obj,json){
+          layer.confirm($(obj).attr('title')=='禁用'?'确认要禁用吗？':'确认要启用吗？',function(index){
+              if($(obj).attr('title')=='禁用'){
+                //发异步把用户状态进行更改
+                $.post("Vip/Update/state",json,function(result){
+                	if(result.state==1){
+                		$(obj).attr('title','启用')
+                        $(obj).find('i').html('&#xe62f;');
+                        $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                        layer.msg('已停用!',{icon: 5,time:1000});
+                	}else{
+                		layer.msg('停用失败!');
+                	}
+                });
+              }else{
+            	  $.post("Vip/Update/state",json,function(result){
+                  	if(result.state==1){
+                  		$(obj).attr('title','禁用')
+                        $(obj).find('i').html('&#xe601;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                        layer.msg('已启用!',{icon: 6,time:1000});
+                  	}else{
+                  		layer.msg('启用失败!');
+                  	}
+                  });
+                
+              }
+
+          });
+      }
+
+      /*用户-删除*/
+      function member_del(obj,userID){
+          layer.confirm('确认要删除吗？',function(index){
+        	  $.ajax({
+  			    url:'Vip/DeleteVip/one',
+  			    type:'post',
+  			    data:{id:userID},
+  			    traditional:true,
+  			    success: function (result) {
+  			    	if(result.state==1){
+  			    		//捉到所有被选中的，发异步进行删除
+  			            layer.msg('删除成功', {icon: 1});
+  				    	GetData();
+  			    	}else{
+  			    		layer.msg(result.message, {icon: 5});
+  			    	}
+  			    }
+  			});
+              $(obj).parents("tr").remove();
+              layer.msg('已删除!',{icon:1,time:1000});
+          });
+      }
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+		
+        layer.confirm('确认要删除吗？',function(index){
+        	$.ajax({
+			    url:'Vip/DeleteVip/some',
+			    type:'post',
+			    data:{ids:data},
+			    traditional:true,
+			    success: function (result) {
+			    	if(result.state==1){
+			    		//捉到所有被选中的，发异步进行删除
+			            layer.msg('删除成功', {icon: 1});
+				    	GetData();
+			    	}else{
+			    		layer.msg(result.message, {icon: 5});
+			    	}
+			    }
+			});
+        });
+      }
+    </script>
+
+  </body>
+
+</html>

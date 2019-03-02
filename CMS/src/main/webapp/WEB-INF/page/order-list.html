@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" /> -->
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script>
+    	$(function(){
+    		$("#tbody").empty();
+    		$("#page").data("start",1);/* 默认分页为第一页 */
+    		GetOrderData();
+    	})
+    	
+    	function GetOrderData(){
+    		$("#tbody").empty();
+    		//获取分页信息
+    		var page = $("#page").data("start");
+    		$.post("order/GetData",{start:page},function(result){
+    			if(result.state==1){
+    				$("#count").html(result.data.page.pageCount);
+    				InTable(result.data.order);
+    			}
+    		});
+    	}
+    	
+    	function InTable(data){
+    		var table = $("#tbody");
+    		for(var i in data){
+	    		var tr = $("<tr></tr>");
+	    		var check = '<td>'+
+	                '<div class="layui-unselect layui-form-checkbox" onclick="selected(this)" lay-skin="primary" data-id="'+data[i].orderId+'"><i class="layui-icon">&#xe605;</i></div>'+
+	                '</td>';
+	            tr.append(check);
+	            var str2 = '<td>'+data[i].orderNumber+'</td>'+
+	                '<td>'+data[i].orderConsignee+'</td>'+
+		            '<td>'+data[i].orderAllpaynumber+'</td>'+
+		            '<td>'+data[i].orderPaynumber+'</td>';
+	            tr.append($(str2));
+	            
+	            var str3 = '<td>'+(data[i].orderOrderstate==1?'已下单':'待下单')+'</td>'+
+		                '<td>'+(data[i].orderPaystate==1?'已支付':'未支付')+'</td>'+
+		                '<td>'+(data[i].orderGostate==1?'已发货':'未发货')+'</td>'+
+		                '<td>'+(data[i].orderPayway==1?'微信':'支付宝')+'</td>'+
+		                '<td>'+(data[i].orderDistributionway==1?'顺丰':'申通')+'</td>'+
+		                '<td>'+(new Date(data[i].orderTime).toLocaleString())+'</td>';
+	            tr.append($(str3));
+	            
+	            var str4 = '<td class="td-manage">'+
+								'<a title="删除" onclick="member_del(this,'+data[i].orderId+')" href="javascript:;">'+
+									'<i class="layui-icon">&#xe640;</i>'+
+								'</a>'+
+							'</td>';
+	            tr.append($(str4));
+	            //tr添加td
+	    		table.append(tr);
+    		}
+    	}
+    	
+    	function selected(obj){
+    		if($(obj).hasClass("layui-unselect layui-form-checkbox layui-form-checked")){
+    			$(obj).attr("class","layui-unselect layui-form-checkbox");
+    		}else{
+    			$(obj).attr("class","layui-unselect layui-form-checkbox layui-form-checked");
+    		}
+    	}
+    	
+    	//分页++
+    	function countADD(){
+    		//获取总页数
+    		var allpage = parseInt($("#count").text());
+    		var page = $("#page").data("start");
+    		if(page<allpage){
+    			$("#page").data("start",++page);
+    			GetOrderData();
+    		}else{
+    			layer.msg("当前已是最后一页啦!");
+    		}
+    	}
+    	
+    	//分页--
+    	function Reduction(){
+    		//获取总页数
+    		var page = $("#page").data("start");
+    		if(page>1){
+    			$("#page").data("start",--page);
+    			GetOrderData();
+    		}else{
+    			layer.msg("当前已是第一页啦!");
+    		}
+    	}
+    </script>
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <xblock>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn" onclick="x_admin_show('添加用户','order_add')"><i class="layui-icon"></i>添加</button>
+        <span class="x-right" style="line-height:40px">共有：<span id="count"></span>页</span>
+      </xblock>
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>订单编号</th>
+            <th>收货人</th>
+            <th>总金额</th>
+            <th>应付金额</th>
+            <th>订单状态</th>
+            <th>支付状态</th>
+            <th>发货状态</th>
+            <th>支付方式</th>
+            <th>配送方式</th>
+            <th>下单时间</th>
+            <th >操作</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td>
+              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+            </td>
+            <td>2017009171822298053</td>
+            <td>老王:18925139194</td>
+            <td>7829.10</td>
+            <td>7854.10</td>
+            <td>待确认</td>
+            <td>未支付</td>
+            <td>未发货</td>
+            <td>其他方式</td>
+            <td>申通物流</td>
+            <td>2017-08-17 18:22</td>
+            <td class="td-manage">
+              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+                <i class="layui-icon">&#xe640;</i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="page">
+        <div id="page"><!-- 分页 -->
+          <a class="prev" href="javascript:;" onclick="Reduction()">&lt;&lt;</a>
+          <a class="next" href="javascript:;" onclick="countADD()">&gt;&gt;</a>
+        </div>
+      </div>
+
+    </div>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+
+      /*用户-删除*/
+      function member_del(obj,ids){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $.post("order/DeleteOrder/one",{id:ids},function(result){
+            	  if(result.state==1){
+		              $(obj).parents("tr").remove();
+		              layer.msg('已删除!',{icon:1,time:1000});
+            	  }else{
+            		  layer.msg(result.message,{icon:5,time:1000});
+            	  }
+              })
+          });
+      }
+
+
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+  		
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+			    url:'order/DeleteOrder/some',
+			    type:'post',
+			    data:{ids:data},
+			    traditional:true,
+			    success: function (result) {
+			    	if(result.state==1){
+			    		layer.msg('删除成功', {icon: 1});
+			            $(".layui-form-checked").not('.header').parents('tr').remove();
+			            GetOrderData();
+			    	}else{
+			    		layer.msg(result.message, {icon: 5});
+			    	}
+			    }
+			});
+        });
+      }
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+    	$(function(){
+    		layui.use(['jquery', 'form', 'table', 'element'], function() {
+    			var table = layui.table;
+    			var form = layui.form;
+	    		/**
+	    			VIP会员选项添加
+	    		*/
+	    		$.post("Vip/GetData",function(result){
+	    			$("#vip_id").empty();
+	    			if(result.state==1){
+	    				var select = $("#vip_id");
+	    				var data = result.data.user;
+	    				for(var i in data){
+	    					var option = $("<option></option>");
+	    					option.val(data[i].vipId);
+	    					option.html(data[i].vipName);
+	    					select.append(option);
+	    				}
+	    				form.render();
+	    			}
+	    		});
+    		})
+    	})
+    </script>
+  </head>
+  <body>
+    <div class="x-body">
+        <form class="layui-form">
+          <div class="layui-form-item">
+              <label for="order_number" class="layui-form-label">
+                  <span class="x-red">*</span>订单编号
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="order_number" name="order_number" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="vip_id" class="layui-form-label">
+                  <span class="x-red">*</span>VIP用户选项
+              </label>
+              <div class="layui-input-inline">
+	              <select id="vip_id" name="vip_id" class="valid">
+	                    <option value="0">已下单</option>
+	                    <option value="1">待下单</option>
+	              </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_consignee" class="layui-form-label">
+                  <span class="x-red">*</span>收货人
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="order_consignee" name="order_consignee" required="" lay-verify="required"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_AllpayNumber" class="layui-form-label">
+                  <span class="x-red">*</span>总金额
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="order_AllpayNumber" name="order_AllpayNumber" required="" lay-verify="order_AllpayNumber"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_paynumber" class="layui-form-label">
+                  <span class="x-red">*</span>应付金额
+              </label>
+              <div class="layui-input-inline">
+                  <input type="number" id="order_paynumber" name="order_paynumber" required="" lay-verify="order_paynumber"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_orderstate" class="layui-form-label">
+                  <span class="x-red">*</span>订单状态
+              </label>
+              <div class="layui-input-inline">
+	              <select id="order_orderstate" name="order_orderstate" class="valid">
+	                    <option value="1">已下单</option>
+	                    <option value="0">待下单</option>
+	              </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_paystate" class="layui-form-label">
+                  <span class="x-red">*</span>支付状态
+              </label>
+              <div class="layui-input-inline">
+	              <select id="order_paystate" name="order_paystate" class="valid">
+	                    <option value="1">已支付</option>
+	                    <option value="0">未支付</option>
+	              </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_gostate" class="layui-form-label">
+                  <span class="x-red">*</span>发货状态
+              </label>
+              <div class="layui-input-inline">
+	              <select id="order_gostate" name="order_gostate" class="valid">
+	                    <option value="0">未发货</option>
+	                    <option value="1">已发货</option>
+	              </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_distributionway" class="layui-form-label">
+                  <span class="x-red">*</span>配送物流
+              </label>
+              <div class="layui-input-inline">
+                  <select id="order_distributionway" name="order_distributionway" class="valid">
+                    <option value="0">申通物流</option>
+                    <option value="1">顺丰物流</option>
+                  </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="order_payway" class="layui-form-label">
+                  <span class="x-red">*</span>支付方式
+              </label>
+              <div class="layui-input-inline">
+                  <select name="order_payway" id="order_payway">
+                    <option value="0">支付宝</option>
+                    <option value="1">微信</option>
+                  </select>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+          </div>
+      </form>
+    </div>
+    <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length < 5){
+                return '昵称至少得5个字符啊';
+              }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+          });
+
+          //监听提交
+          form.on('submit(add)', function(data){
+            var dataJson = {
+            		vipId:parseInt($("#vip_id").val()),
+            		orderNumber:$("#order_number").val(),
+            		orderConsignee:$("#order_consignee").val(),
+            		orderAllpaynumber:parseInt($("#order_AllpayNumber").val()),
+            		orderPaynumber:parseInt($("#order_paynumber").val()),
+            		orderOrderstate:parseInt($("#order_orderstate option:selected").val()),
+            		orderPaystate:parseInt($("#order_paystate option:selected").val()),
+            		orderGostate:parseInt($("#order_gostate option:selected").val()),
+            		orderPayway:parseInt($("#order_payway option:selected").val()),
+            		orderDistributionway:parseInt($("#order_distributionway option:selected").val()),
+            		orderTime:new Date()
+            }
+            //console.log(dataJson.orderPaystate);
+            //发异步，把数据提交给API
+            $.post("order/insertOrder",dataJson,function(result){
+            	if(result.state==1){
+		            layer.alert("增加成功", {icon: 6},function () {
+		                // 获得frame索引
+		                var index = parent.layer.getFrameIndex(window.name);
+		                //关闭当前frame
+		                parent.layer.close(index);
+		            });
+            	}else{
+            		layer.alert("增加失败", {icon: 5});
+            	}
+            });
+            return false;
+          });
+          
+          
+        });
+    </script>
+
+  </body>
+
+</html>

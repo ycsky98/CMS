@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+ <generatorConfiguration>
+     <!-- 数据库驱动-->    
+     <classPathEntry location="C:/Users/adminYC/.m2/repository/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40-sources.jar"/>  
+     <context id="context">
+         <!-- 数据库链接URL，用户名、密码 -->
+         <jdbcConnection 
+             connectionURL="jdbc:mysql:///myproject?useSSL=true" 
+            driverClass="com.mysql.jdbc.Driver" 
+            password="yang" 
+            userId="root" />
+        <!-- 生成实体类的位置 -->
+        <javaModelGenerator targetPackage="cn.yc.cms.pojo" targetProject="CMS\src\main\java" />
+        <!-- 生成映射文件的位置 -->
+        <sqlMapGenerator targetPackage="mapper.daomapper" targetProject="CMS\src\main\resources" />
+        <!-- 生成DAO的位置 -->
+        <javaClientGenerator targetPackage="cn.yc.cms.dao.OrderTableDao" targetProject="CMS\src\main\java" type="XMLMAPPER" />
+        <!-- 要生成的表/视图 -->
+        <table tableName="Order_Table" domainObjectName="OrderTable" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+    </context>
+</generatorConfiguration>

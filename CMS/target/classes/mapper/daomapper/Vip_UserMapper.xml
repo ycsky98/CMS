@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.yc.cms.dao.VipDao.Vip_UserMapper">
+  <resultMap id="BaseResultMap" type="cn.yc.cms.pojo.Vip_User">
+  	<!-- 表字段实体属性转换 -->
+    <id column="vip_id" jdbcType="INTEGER" property="vipId" />
+    <result column="vip_name" jdbcType="VARCHAR" property="vipName" />
+    <result column="vip_username" jdbcType="VARCHAR" property="vipUsername" />
+    <result column="vip_password" jdbcType="VARCHAR" property="vipPassword" />
+    <result column="vip_sex" jdbcType="INTEGER" property="vipSex" />
+    <result column="vip_state" jdbcType="INTEGER" property="vipState" />
+    <result column="vip_phone" jdbcType="VARCHAR" property="vipPhone" />
+    <result column="vip_email" jdbcType="VARCHAR" property="vipEmail" />
+    <result column="vip_address" jdbcType="VARCHAR" property="vipAddress" />
+    <result column="vip_time" jdbcType="TIMESTAMP" property="vipTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    vip_id, vip_name, vip_username, vip_password, vip_sex, vip_state, vip_phone, vip_email, 
+    vip_address, vip_time
+  </sql>
+  
+  <!-- 根据key查询 -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vip_user
+    where vip_id = #{vipId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询所有用户 -->
+  <select id="selectAll" resultMap="BaseResultMap">
+  	select * from vip_user 
+  	<if test="start!=null">
+	  	limit #{start},#{end}
+  	</if>
+  </select>
+  
+  <!-- 数量统计 -->
+  <select id="count" resultType="java.lang.Integer">
+  	select count(1) from vip_user
+  </select>
+  
+  <!-- 根据ID删除单个用户 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from vip_user
+    where vip_id = #{vipId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除 -->
+  <delete id="deleteSomeByKeys">
+  	delete from vip_user where vip_id in 
+  	<foreach collection="ids" open="(" separator="," close=")" item="it">
+		#{it}
+	</foreach>
+  </delete>
+  
+  <!-- 一次性录入所用属性用户 -->
+  <insert id="insert" parameterType="cn.yc.cms.pojo.Vip_User">
+    insert into vip_user (vip_name, vip_username, 
+      vip_password, vip_sex, vip_state, 
+      vip_phone, vip_email, vip_address, 
+      vip_time)
+    values (#{vipName,jdbcType=VARCHAR}, #{vipUsername,jdbcType=VARCHAR}, 
+      #{vipPassword,jdbcType=VARCHAR}, #{vipSex,jdbcType=INTEGER}, #{vipState,jdbcType=INTEGER}, 
+      #{vipPhone,jdbcType=VARCHAR}, #{vipEmail,jdbcType=VARCHAR}, #{vipAddress,jdbcType=VARCHAR}, 
+      #{vipTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 有选择性录入 -->
+  <insert id="insertSelective" parameterType="cn.yc.cms.pojo.Vip_User">
+    insert into vip_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="vipName != null">
+        vip_name,
+      </if>
+      <if test="vipUsername != null">
+        vip_username,
+      </if>
+      <if test="vipPassword != null">
+        vip_password,
+      </if>
+      <if test="vipSex != null">
+        vip_sex,
+      </if>
+      <if test="vipState != null">
+        vip_state,
+      </if>
+      <if test="vipPhone != null">
+        vip_phone,
+      </if>
+      <if test="vipEmail != null">
+        vip_email,
+      </if>
+      <if test="vipAddress != null">
+        vip_address,
+      </if>
+      <if test="vipTime != null">
+        vip_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="vipName != null">
+        #{vipName,jdbcType=VARCHAR},
+      </if>
+      <if test="vipUsername != null">
+        #{vipUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="vipPassword != null">
+        #{vipPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="vipSex != null">
+        #{vipSex,jdbcType=INTEGER},
+      </if>
+      <if test="vipState != null">
+        #{vipState,jdbcType=INTEGER},
+      </if>
+      <if test="vipPhone != null">
+        #{vipPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="vipEmail != null">
+        #{vipEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="vipAddress != null">
+        #{vipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vipTime != null">
+        #{vipTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <!-- 有选择性修改(只修改有值属性) -->
+  <update id="updateByPrimaryKeySelective" parameterType="cn.yc.cms.pojo.Vip_User">
+    update vip_user
+    <set>
+      <if test="vipName != null">
+        vip_name = #{vipName,jdbcType=VARCHAR},
+      </if>
+      <if test="vipUsername != null">
+        vip_username = #{vipUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="vipPassword != null">
+        vip_password = #{vipPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="vipSex != null">
+        vip_sex = #{vipSex,jdbcType=INTEGER},
+      </if>
+      <if test="vipState != null">
+        vip_state = #{vipState,jdbcType=INTEGER},
+      </if>
+      <if test="vipPhone != null">
+        vip_phone = #{vipPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="vipEmail != null">
+        vip_email = #{vipEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="vipAddress != null">
+        vip_address = #{vipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="vipTime != null">
+        vip_time = #{vipTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where vip_id = #{vipId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 一次性修改所有 -->
+  <update id="updateByPrimaryKey" parameterType="cn.yc.cms.pojo.Vip_User">
+    update vip_user
+    set vip_name = #{vipName,jdbcType=VARCHAR},
+      vip_username = #{vipUsername,jdbcType=VARCHAR},
+      vip_password = #{vipPassword,jdbcType=VARCHAR},
+      vip_sex = #{vipSex,jdbcType=INTEGER},
+      vip_state = #{vipState,jdbcType=INTEGER},
+      vip_phone = #{vipPhone,jdbcType=VARCHAR},
+      vip_email = #{vipEmail,jdbcType=VARCHAR},
+      vip_address = #{vipAddress,jdbcType=VARCHAR},
+      vip_time = #{vipTime,jdbcType=TIMESTAMP}
+    where vip_id = #{vipId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询手机号和邮箱是否存在 -->
+  <select id="selectByPhoneOrEmail" resultType="int">
+  	select count(1) from vip_user where vip_phone=#{phone} or vip_email=#{email}
+  </select>
+</mapper>
